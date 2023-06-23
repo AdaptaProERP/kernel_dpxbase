@@ -185,12 +185,19 @@ RETURN .T.
 FUNCION VALIDARCONEXION()
    LOCAL _MycIp,_MycPass,_MycLoging,_MySqlDate:=oDp:cSqlDate,_MySqlPort
    LOCAL cFileMem:="MYSQL.MEM"
-   LOCAL oDb,cRif:=oFrm:cRif
+   LOCAL oDb,cRif:=oFrm:cRif,cMemoP:=""
  
    oFrm:oMemo:Append("Generando credenciales  "+CRLF)
-   oFrm:oMemo:Append("Validando Conección con Servidor local "+oFrm:cIp+CRLF)
+// oFrm:oMemo:Append("Validando Conección con Servidor local "+oFrm:cIp+CRLF)
+   oFrm:oMemo:Append("Ejecutando PING "+oFrm:LIC_SRVIP+CRLF)
+   cMemoP:=EJECUTAR("GETPING",oFrm:LIC_SRVIP)
 
-   oDb:=DPMYSQLBD(oFrm:cDb,oFrm:cIp,oFrm:cLogin,oFrm:cPass,oFrm:nPort,oFrm:lError,.F.,.F.,.F.)
+   oFrm:oMemo:Append(cMemoP+CRLF)
+
+   IF !"AGOTA"$UPPER(cMemoP)
+      oFrm:oMemo:Append("Conectando con BD "+oFrm:LIC_SRVIP+CRLF)
+      oDb:=DPMYSQLBD(oFrm:cDb,oFrm:cIp,oFrm:cLogin,oFrm:cPass,oFrm:nPort,oFrm:lError,.F.,.F.,.F.)
+   ENDIF
 
    IF ValType(oDb)="O"
 
