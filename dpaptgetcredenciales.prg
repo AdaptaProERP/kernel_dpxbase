@@ -45,7 +45,7 @@ FUNCTION XMAIN2(lFrame)
    cRif     :=IF(Empty(oDp:cLic_Rif),cRif     ,oDp:cLic_Rif)
    cLicencia:=IF(Empty(oDp:cLic_Num),cLicencia,oDp:cLic_Num)
 
-   oFrm:=DPEDIT():New("Obtener Credenciales de la Base de Datos para Conectarse con el Servidor Local","DPGETNUMLIC.edt","oFrm",.T.,oDp:lDialog)
+   oFrm:=DPEDIT():New("Obtener Credenciales de la Base de Datos para Conectarse con el Servidor Local","DPAPTGETCREDENCIALES.edt","oFrm",.T.,oDp:lDialog)
 
    oFrm:cRif      :=cRif
    oFrm:cLicencia :=PADR(cLicencia,34)  // "10000615M1002NGL5101949",24) // SPACE(24)
@@ -288,7 +288,7 @@ FUNCTION SETMYSQLMEM()
     _MycLoging:=ENCRIPT(_MycLoging,.T.)
     _MySqlDate:=ENCRIPT(oDp:cSqlDate,.T.)
 
-    IF MsgNoYes("Desea Crear Credenciales para Conexión para este PC")
+    IF MsgNoYes("Desea Crear Credenciales para Conexión con este PC")
 
        SAVE TO (cFileMem) ALL LIKE _My*
 
