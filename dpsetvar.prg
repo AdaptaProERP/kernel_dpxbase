@@ -43,5 +43,11 @@ PROCE MAIN()
       EJECUTAR("DPAPTGETCREDENCIALES") // Solicita Numero de la Licencia para obtener las credenciales desde el Servidor
    ENDIF
 
+   IF FILE("MYSQLPLANB.MEM")
+      EJECUTAR("MYSQLPLANB") // Validar las credenciales de MySQL.MEM y MYSQLPLANB.MEM
+   ENDIF
+
+
+
 RETURN .T.
 // EOF
