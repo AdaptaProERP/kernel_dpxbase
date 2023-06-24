@@ -1,6 +1,6 @@
 // Programa   : CONFIGSYS
 // Fecha/Hora : 26/06/2005 23:04:58
-// Propósito  : Privilegios para Ventas
+// Propósito  : Registrar la configuración del Sistema, colores y funcionalidades.
 // Creado Por : Juan Navas
 // Llamado por: DPMENUPRIV
 // Aplicación : Administración
