@@ -46,6 +46,11 @@ PROCE MAIN()
     SysRefresh(.T.)
     aFiles:=DIRECTORY(cDir+"*.MSI")
 
+    IF Empty(aFiles)
+       MsgMemo("No fué descargado el programa "+CRLF+cUrl,"Revise restricciones del OS")
+       RETURN .F.
+    ENDIF
+
  ENDIF
 
  IF Empty(aFiles)
