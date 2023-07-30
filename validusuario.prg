@@ -17,16 +17,14 @@ PROCE MAIN(oForm,lButton)
    LOCAL cDb    :=GETDSN("DPUSUARIOS")
    LOCAL cLoginE:=""
    LOCAL cPassE :=""
+   LOCAL oDb    :=OpenOdbc(oDp:cDsnConfig)
+   LOCAL oCon   :=oDb:oConnect,nT:=Seconds()-oCon:nSeconds
 
-   // JN 4/4/2018 Validar Usuario Dormido
-   IF .t. // oForm:nTimeMax>0 .AND. ABS(Seconds()-oForm:nSeconds) >= (oForm:nTimeMax)
-     MYSQLCHKCONN() // Validar la Apertura de la BD Usuarios Dormidos
+   // 30/07/2023
+   IF nT>oCon:nTimeMax 
+      MySqlStart(.T.)
+      EJECUTAR("MYSQLCHKCONN",.T.)
    ENDIF
-   // JN 15/12/2022
-
-   MySqlStart(.T.)
-
-// ? "VALID USUARIO",GetProce()
 
    IF cDb=oDp:cDsnData
       SQLUPDATE("DPTABLAS","TAB_DSN",".CONFIGURACION","TAB_NOMBRE"+getWhere("=","DPUSUARIOS"))
