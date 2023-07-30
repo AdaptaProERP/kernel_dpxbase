@@ -35,10 +35,11 @@ PROCE MAIN(cSql,nPag,cText,oDb,nTotal,oSay,oMeter)
      CursorWait()
  
      IF ValType(oSay)="O"
-        IF nTotal>0
+
+        IF nTotal=0
           oSay:SetText(cText+" Reg: "+LSTR(nDesde)+","+LSTR(nPag))
         ELSE
-          oSay:SetText(cText+" Reg: "+LSTR(nDesde)+"/"+LSTR(nTotal)+","+LSTR(nPag))
+          oSay:SetText(cText+" Reg: "+LSTR(LEN(aPag))+"/"+LSTR(nTotal)+","+LSTR(nPag))
         ENDIF
      ELSE
         MsgRun(cText+" Reg: "+LSTR(nDesde)+","+LSTR(nPag))
