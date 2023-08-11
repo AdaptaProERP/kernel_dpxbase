@@ -18,7 +18,8 @@ PROCE MAIN(lData)
   oDb    :=OpenOdbc(IF(lData,oDp:cDsnData,oDp:cDsnConfig))
 
   cWhere :="CAM_NAME "+GetWhere(" LIKE ","%_DESCRI%")+" OR "+;
-           "CAM_NAME "+GetWhere(" LIKE ","%_NOMBRE%")
+           "CAM_NAME "+GetWhere(" LIKE ","%_NOMBRE%")+" OR "+;
+           "CAM_NAME "+GetWhere(" LIKE ","%_PRESEN%")
 
   oTable :=OpenTable(" SELECT CAM_TABLE,CAM_NAME,TAB_PRIMAR FROM DPCAMPOS "+;
                      " INNER JOIN DPTABLAS ON TAB_NOMBRE=CAM_TABLE AND "+cWhereT+;
@@ -37,6 +38,11 @@ PROCE MAIN(lData)
 
     cField:=ALLTRIM(oTable:CAM_NAME)
     cTable:=ALLTRIM(oTable:CAM_TABLE)
+
+    IF !EJECUTAR("ISFIELDMYSQL",oDb,cTable,cField)
+       Checktable(cTable)
+    ENDIF
+
 
     FOR I=1 TO LEN(aData)
 
