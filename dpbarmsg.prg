@@ -10,6 +10,7 @@
 
 PROCE MAIN(cText)
   LOCAL oFont,cFecha:="",cPeriodo,dDesde,dHasta,cDesde:="",cHasta:="",cAno:="",cUsuario
+  LOCAL nLin:=0,lDown
 
   DEFAULT oDp:oBarSay:=NIL
 
@@ -51,18 +52,39 @@ PROCE MAIN(cText)
 
   IF oDp:oBarSay=NIL 
 
-    DEFINE FONT oFont  NAME "Tahoma" SIZE 0, -12 BOLD
+    AEVAL(oDp:oFrameDp:oBar:aControls,{|o,n|nLin:=nLin+IF("TXB"$o:ClassName(),o:nWidth(),0) })
 
-    @ 2,oDp:oBar:nWidth()-253 SAY oDp:oBarSay PROMPT " "+oDp:cText+" "  OF oDp:oBar;
-               COLOR oDp:nClrYellowText,oDp:nClrYellow SIZE 248,17 BORDER FONT oFont PIXEL CENTER
-
+    lDown:=IF(nLin>(oDp:oFrameDp:oBar:nWidth()-500),.T.,.F.)
 
     DEFINE FONT oFont  NAME "Tahoma" SIZE 0, -12 BOLD
 
-    @20,oDp:oBar:nWidth()-253 SAY oDp:oBarPer PROMPT " "+oDp:cPeriodo+" "  OF oDp:oBar;
-               COLOR oDp:nClrLabelText,oDp:nClrLabelPane SIZE 248,17 BORDER FONT oFont RIGHT PIXEL
+    IF !lDown
 
-    oFont:End()
+      @ 2,oDp:oBar:nWidth()-253 SAY oDp:oBarSay PROMPT " "+oDp:cText+" "  OF oDp:oBar;
+                 COLOR oDp:nClrYellowText,oDp:nClrYellow SIZE 248,17 BORDER FONT oFont PIXEL CENTER
+
+
+      DEFINE FONT oFont  NAME "Tahoma" SIZE 0, -12 BOLD
+
+      @20,oDp:oBar:nWidth()-253 SAY oDp:oBarPer PROMPT " "+oDp:cPeriodo+" "  OF oDp:oBar;
+                 COLOR oDp:nClrLabelText,oDp:nClrLabelPane SIZE 248,17 BORDER FONT oFont RIGHT PIXEL
+
+     ELSE
+  
+       @38,oDp:oBar:nWidth()-510 SAY oDp:oBarSay PROMPT " "+oDp:cText+" "  OF oDp:oBar;
+                 COLOR oDp:nClrYellowText,oDp:nClrYellow SIZE 248,17 BORDER FONT oFont PIXEL CENTER
+
+
+       DEFINE FONT oFont  NAME "Tahoma" SIZE 0, -12 BOLD
+
+       @38,oDp:oBar:nWidth()-253 SAY oDp:oBarPer PROMPT " "+oDp:cPeriodo+" "  OF oDp:oBar;
+                 COLOR oDp:nClrLabelText,oDp:nClrLabelPane SIZE 248,17 BORDER FONT oFont RIGHT PIXEL
+
+
+
+     ENDIF
+
+      oFont:End()
 
   ENDIF
 

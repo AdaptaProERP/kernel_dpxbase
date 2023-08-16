@@ -10,7 +10,8 @@
 
 PROCE MAIN()
    LOCAL nLin:=0,oFont,oFontG
-   LOCAL oBtn:=NIL
+   LOCAL oBtn:=NIL,nCol:=14
+   LOCAL lDown:=.F. // Muestra el buscador en la parte inferior de la barra de botones
 
    DEFINE FONT oFont  NAME "Tahoma" SIZE 0, -12 BOLD
    DEFINE FONT oFontG NAME "Tahoma" SIZE 0, -10
@@ -30,15 +31,43 @@ PROCE MAIN()
 
    IF oDp:oGetFind=NIL 
 
-      @ 13,nLin+32 BMPGET oDp:oGetFind VAR oDp:cGetFind;
+      // ? oDp:oFrameDp:oBar:nWidth(),"oDp:oFrameDp:oBar:nWidth()",nLin
+      // Resta el tamaño del area del usuario y fecha
+      lDown:=IF(nLin>(oDp:oFrameDp:oBar:nWidth()-500),.T.,.F.)
+
+      IF lDown
+         oDp:oFrameDp:oBar:SetSize(NIL,60,.T.)
+         nLin:=2
+         nCol:=37
+      ELSE
+         oDp:oFrameDp:oBar:SetSize(NIL,40,.T.)
+      ENDIF
+
+      oDp:oFrameDp:oBar:Refresh(.t.)
+
+      @ nCol,nLin+32 BMPGET oDp:oGetFind VAR oDp:cGetFind;
                    ACTION EJECUTAR("BTNBARFINDHIS");
                    OF oDp:oFrameDp:oBar SIZE 170,18 PIXEL FONT oFontG
 
-      @ 01,nLin+32 BUTTON oDp:oBtnFind;
-           PROMPT " Buscar Opción >> ";
-           ACTION EJECUTAR("BTNBARFINDRUN");
-           WHEN !Empty(oDp:cGetFind);
-           OF oDp:oFrameDp:oBar SIZE 170,16 PIXEL FONT oFont
+      IF !lDown
+
+        @ 01,nLin+32 BUTTON oDp:oBtnFind;
+             PROMPT " Buscar Opción >> ";
+             ACTION EJECUTAR("BTNBARFINDRUN");
+             WHEN !Empty(oDp:cGetFind);
+             OF oDp:oFrameDp:oBar SIZE 170,16 PIXEL FONT oFont
+
+      ELSE
+
+
+        @ nCol,nLin+232 BUTTON oDp:oBtnFind;
+             PROMPT " Buscar Opción >> ";
+             ACTION EJECUTAR("BTNBARFINDRUN");
+             WHEN !Empty(oDp:cGetFind);
+             OF oDp:oFrameDp:oBar SIZE 170,16 PIXEL FONT oFont
+
+
+      ENDIF
 
       oDp:oGetFind:cToolTip:="Buscar Opciones de Ejecución "
       oDp:oGetFind:bKeyDown:={|nKey| oDp:oGetFind:ForWhen(.T.), IF(nKey=13,EJECUTAR("BTNBARFINDRUN"),NIL)}
@@ -46,7 +75,10 @@ PROCE MAIN()
    ENDIF
 
 //   oDp:oSayFind:Move(01,nLin+32)
-   oDp:oGetFind:Move(19-.5,nLin+34)
+
+   IF !lDown
+     oDp:oGetFind:Move(19-.5,nLin+34)
+   ENDIF
 
    oDp:oBtnFind:ForWhen(.T.)
    oDp:oGetFind:Refresh(.T.)
@@ -57,7 +89,8 @@ PROCE MAIN()
      oBtn:=BMPGETBTN(oDp:oFrameDp:oBar)
 
      IF ValType(oBtn)="O"
-       oBtn:Move(17,nLin+34+oDp:oGetFind:nWidth())
+       // oBtn:Move(17,nLin+34+oDp:oGetFind:nWidth())
+       oBtn:Move(nCol+1,nLin+34+oDp:oGetFind:nWidth())
        oBtn:bWhen:={||.T.} 
        oBtn:ForWhen(.T.)
      ENDIF
