@@ -8,7 +8,7 @@
 
 #INCLUDE "DPXBASE.CH"
 
-PROCE MAIN(oBrw,nCol)
+PROCE MAIN(oBrw,nCol,oMdiFrm)
    LOCAL aData,aGroup:={},oCol,uKey,nContar:=1,aTotal:={},aNew:={},I,aLine:={},aSubTotal:={}
    LOCAL aTotalO:={}
 
@@ -20,13 +20,24 @@ PROCE MAIN(oBrw,nCol)
 
    oCol:=oBrw:aCols[nCol]
 
-//   SortArray( oCol, oBrw:aArrayData )  
-
    IF Empty(oBrw:aData)
       oBrw:aData:=ACLONE(oBrw:aArrayData)
    ENDIF
 
    aData:=ACLONE(oBrw:aArrayData)
+
+   // busca sub-Total para removerlo
+   IF !__objHasMsg( oBrw, "nColSubTotal") 
+     __objAddData(oBrw,"nColSubTotal")
+     __objSendMsg(oBrw,"nColSubTotal",0)
+   ENDIF
+
+   IF oBrw:nColSubTotal>0
+      ADEPURA(aData,{|a,n| "Sub-Total"$a[oBrw:nColSubTotal]})
+   ENDIF
+
+   __objAddData(oBrw,"nColSubTotal")
+   __objSendMsg(oBrw,"nColSubTotal",nCol)
 
    aData:=ASORT(aData,,, { |x, y| x[nCol] < y[nCol] })
 
@@ -36,7 +47,6 @@ PROCE MAIN(oBrw,nCol)
    IF ValType(aLine[nCol])="C"
       aLine[nCol]:="Sub-Total"
    ENDIF
-
 
    WHILE nContar<=LEN(aData)
 
