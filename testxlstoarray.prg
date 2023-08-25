@@ -3,6 +3,8 @@
 // Propósito  : Importar contenido de archivo en excel hacia arreglo
 // Creado Por : Juan Navas
 // Archivo Origen https://github.com/AdaptaProERP/kernel_dpxbase/blob/main/LIBRO.xlsx
+// Utilización clase 
+// texcelscript : https://github.com/AdaptaProERP/kernel_source/blob/main/TEXCELS.PRG
 // Llamado por:
 // Aplicación :
 // Tabla      :
@@ -30,13 +32,7 @@ PROCE MAIN(cFile,nIni,nMaxCol)
   WHILE .T.
 
      aLine:=ARRAY(nMaxCol)
-
-     FOR nCol=1 TO nMaxCol
-         cValue:=SPACE(100)
-         uData :=oExcel:Get( nLine , nCol ,@cValue )
-         AADD(aLine,uData)
-         aLine[nCol]:=uData
-     NEXT nCol
+     AEVAL(aLine,{|a,nCol,cValue| cValue:=SPACE(200),aLine[nCol]:=oExcel:Get( nLine , nCol ,@cValue ) })
 
      IF Empty(aLine[1])
         EXIT
