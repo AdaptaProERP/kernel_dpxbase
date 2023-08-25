@@ -1,7 +1,8 @@
 // Programa   : TESTXLSTOARRAY
 // Fecha/Hora : 24/08/2023 21:49:00
-// Propósito  :
-// Creado Por :
+// Propósito  : Importar contenido de archivo en excel hacia arreglo
+// Creado Por : Juan Navas
+// Archivo Origen https://github.com/AdaptaProERP/kernel_dpxbase/blob/main/LIBRO.xlsx
 // Llamado por:
 // Aplicación :
 // Tabla      :
