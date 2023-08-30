@@ -145,79 +145,9 @@ PROCE MAIN(oFrmNm,cFileJpg,cDescri,cField)
   oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
   oCol:nWidth       := 220
 
+  oWebCam:oBrw:aCols[1]:cFooter:=" #"+LSTR(LEN(aData))
 
-
-
-
-/*
-  // Campo: CRC_CODIGO
-  oCol:=oWebCam:oBrw:aCols[3]
-  oCol:cHeader      :='Código'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 80
-
-  // Campo: CRC_ESTADO
-  oCol:=oWebCam:oBrw:aCols[4]
-  oCol:cHeader      :='Estado'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 56
-   oCol:bClrStd  := {|nClrText,uValue|uValue:=oWebCam:oBrw:aArrayData[oWebCam:oBrw:nArrayAt,4],;
-                     nClrText:=COLOR_OPTIONS("DPCLIENTESREC ","CRC_ESTADO",uValue),;
-                     {nClrText,iif( oWebCam:oBrw:nArrayAt%2=0, oWebCam:nClrPane1, oWebCam:nClrPane2 ) } } 
-
-  // Campo: CRC_SEXO
-  oCol:=oWebCam:oBrw:aCols[5]
-  oCol:cHeader      :='Sexo'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 80
-  oCol:bClrStd  := {|nClrText,uValue|uValue:=oWebCam:oBrw:aArrayData[oWebCam:oBrw:nArrayAt,5],;
-                     nClrText:=COLOR_OPTIONS("DPCLIENTESREC ","CRC_SEXO",uValue),;
-                     {nClrText,iif( oWebCam:oBrw:nArrayAt%2=0, oWebCam:nClrPane1, oWebCam:nClrPane2 ) } } 
-
-  // Campo: CRC_PARENT
-  oCol:=oWebCam:oBrw:aCols[6]
-  oCol:cHeader      :='Parentesco'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 48
-  oCol:bClrStd  := {|nClrText,uValue|uValue:=oWebCam:oBrw:aArrayData[oWebCam:oBrw:nArrayAt,6],;
-                     nClrText:=COLOR_OPTIONS("DPCLIENTESREC ","CRC_PARENT",uValue),;
-                     {nClrText,iif( oWebCam:oBrw:nArrayAt%2=0, oWebCam:nClrPane1, oWebCam:nClrPane2 ) } } 
-
-  // Campo: CRC_OBS1
-  oCol:=oWebCam:oBrw:aCols[7]
-  oCol:cHeader      :='Profesión'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 400
-
-  // Campo: CRC_FECHA
-  oCol:=oWebCam:oBrw:aCols[8]
-  oCol:cHeader      :='Fecha'+CRLF+'Nac.'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 70
-
-
-  // Campo: CRC_FCHINI
-  oCol:=oWebCam:oBrw:aCols[10]
-  oCol:cHeader      :='Fecha'+CRLF+'Inicio'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 70
-
-  // Campo: CRC_CODCLI
-  oCol:=oWebCam:oBrw:aCols[11]
-  oCol:cHeader      :='Código'+CRLF+'Socio'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 80
-
-  // Campo: CLI_NOMBRE
-  oCol:=oWebCam:oBrw:aCols[12]
-  oCol:cHeader      :='Nombre'
-  oCol:bLClickHeader := {|r,c,f,o| SortArray( o, oWebCam:oBrw:aArrayData ) } 
-  oCol:nWidth       := 480
-
-*/
-   oWebCam:oBrw:aCols[1]:cFooter:=" #"+LSTR(LEN(aData))
-
-   oWebCam:oBrw:bClrStd  := {|oBrw,nClrText,aLine|oBrw:=oWebCam:oBrw,aLine:=oBrw:aArrayData[oBrw:nArrayAt],;
+  oWebCam:oBrw:bClrStd  := {|oBrw,nClrText,aLine|oBrw:=oWebCam:oBrw,aLine:=oBrw:aArrayData[oBrw:nArrayAt],;
                                                  nClrText:=oWebCam:nClrText,;
                                                  nClrText:=IF(.F.,oWebCam:nClrText1,nClrText),;
                                                  nClrText:=IF(.F.,oWebCam:nClrText2,nClrText),;
@@ -404,18 +334,6 @@ RETURN (.T.)
 
 FUNCTION CAMCANCEL(lClick)
     LOCAL lReturn := .F.
-
-/*
-    IF lClick
-        IF MsgNoYes("The picture will not be saved. Are you sure to quit?")
-            lReturn := TRUE
-        ELSE
-            lReturn := FALSE
-        ENDIF
-    ELSE
-        lReturn := TRUE
-    ENDIF
-*/
 RETURN (lReturn)
 
 FUNCTION WEBCAMSAVE()
@@ -428,12 +346,6 @@ FUNCTION WEBCAMSAVE()
 
   oWebCam:lClick := .T.
 
-/*
-  IF !oWebCam:oFrmNm=NIL
-     oWebCam:oFrmNm:oImage1:LoadBmp(oWebCam:cFileJpg)
-     oWebCam:oFrmNm:oFILEBMP:VarPut(oWebCam:cFileJpg,.T.)
-  ENDIF
-*/
   oWebCam:oWnd:Update()
 
 RETURN .T.
@@ -542,8 +454,6 @@ FUNCTION VALCODCLI()
             oWebCam:VALCEDULA()
 
          ENDIF
-
-// ? cCodigo,"BUSCADO EN FAMILIA"
 
       ENDIF
 
@@ -703,6 +613,5 @@ FUNCTION VISGUARDAR()
 
    oWebCam:oBrw:GoBottom()
    oWebCam:oBrw:Refresh(.F.)
-
 
 RETURN .T.
