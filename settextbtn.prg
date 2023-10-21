@@ -9,9 +9,9 @@
 #INCLUDE "DPXBASE.CH"
 
 PROCE MAIN(cCodPrg)
-    LOCAL cMemo,nAt,nAt2,cBtn,cFileScr,cFileDxB
+    LOCAL cMemo,nAt,nAt2,cBtn,cFileScr,cFileDxB,nAt,cText:="",cVar:=""
 
-    DEFAULT cCodPrg:="BRCXC"
+    DEFAULT cCodPrg:="BRASIENTOSCOM"
 
     cCodPrg :=ALLTRIM(cCodPrg)
     cFileScr:="SCRIPT\"+ALLTRIM(cCodPrg)+".SCR"
@@ -22,6 +22,8 @@ PROCE MAIN(cCodPrg)
     cMemo:=SETBTNTEXT("XSAVE.BMP"            ,"Grabar")
     cMemo:=SETBTNTEXT("BRWMENU.BMP"          ,"Menú")
     cMemo:=SETBTNTEXT("XFIND.BMP"            ,"Buscar")
+    cMemo:=SETBTNTEXT("XEDIT.BMP"            ,"Editar")
+    cMemo:=SETBTNTEXT("XDELETE.BMP"          ,"Eliminar")
     cMemo:=SETBTNTEXT("FILTRAR.BMP"          ,"Filtrar")
     cMemo:=SETBTNTEXT("PRODUCTO.BMP"         ,"Producto")
     cMemo:=SETBTNTEXT("XBROWSE.BMP"          ,"Detalles")
@@ -35,6 +37,7 @@ PROCE MAIN(cCodPrg)
     cMemo:=SETBTNTEXT("VIEW.BMP"             ,"Consulta")
     cMemo:=SETBTNTEXT("documentocxc.BMP"     ,"CxC")
     cMemo:=SETBTNTEXT("MENUTRANSACCIONES.BMP","Transacc.")
+    cMemo:=SETBTNTEXT("PRECIOS.BMP"          ,"Precio")
     cMemo:=SETBTNTEXT("EXCEL.BMP"            ,"Excel")
     cMemo:=SETBTNTEXT("html.BMP"             ,"Html")
     cMemo:=SETBTNTEXT("PREVIEW.BMP"          ,"Preview")
@@ -45,10 +48,60 @@ PROCE MAIN(cCodPrg)
     cMemo:=SETBTNTEXT("xFIN.BMP"             ,"Ultimo")
     cMemo:=SETBTNTEXT("XSALIR.BMP"           ,"Cerrar")
 
+    // Agregamos el Alto de la Barra de botones
+
+    IF !"DEFINE BUTTONBAR oBar SIZE oDp:nBtnWidth"$cMemo
+
+      nAt:=AT("DEFINE BUTTONBAR",cMemo)
+
+      IF nAt>0
+         cMemo:=LEFT(cMemo,nAt-1)+[IF !oDp:lBtnText ]+CRLF+SPACE(5)+SUBS(cMemo,nAt,LEN(cMemo))
+      ENDIF
+  
+      nAt:=AT("3D CURSOR oCursor",cMemo)
+
+      IF nAt>0
+
+         cMemo:=LEFT(cMemo,nAt+16)+CRLF+[   ELSE ]+CRLF+;
+                [     DEFINE BUTTONBAR oBar SIZE oDp:nBtnWidth,oDp:nBarnHeight+6 OF oDlg 3D CURSOR oCursor ]+CRLF+;
+                [   ENDIF ]+CRLF+;
+                SUBS(cMemo,nAt+17,LEN(cMemo))
+
+      ENDIF
+
+    ENDIF
+
+    nAt:=AT(":Close()",cMemo)
+
+    IF nAt>0
+
+      cVar:=SUBS(cMemo,nAt-20,40)
+      nAt :=AT(":",cVar)
+      cVar:=LEFT(cVar,nAt-1)
+      nAt :=AT(" ",cVar)
+      cVar:=ALLTRIM(SUBS(cVar,nAt,LEN(cVar)))
+
+    ENDIF
+
+    nAt:=AT(" DEFINE BUTTON ",cMemo)
+
+    IF !Empty(cVar) .AND. nAt>0 .AND. ![oBrw:oLbx]$cMemo
+   
+      cMemo:=LEFT(cMemo,nAt)+;
+             cVar+[:oFontBtn   :=oFont    ]+CRLF+;
+             [   ]+cVar+[:nClrPaneBar:=oDp:nGris]+CRLF+;
+             [   ]+cVar+[:oBrw:oLbx  :=]+cVar   +CRLF+;
+             []+CRLF+SUBS(cMemo,nAt,LEN(cMemo))
+
+
+    ENDIF
+
+
     SQLUPDATE(oDp:cDpProgra,"PRG_TEXTO",cMemo,"PRG_CODIGO"+GetWhere("=",cCodPrg))
 
     DPWRITE(cFileScr,cMemo)
-    WinExec(  GetWinDir()+ "\NOTEPAD.EXE "+cFileScr)
+
+//    WinExec(  GetWinDir()+ "\NOTEPAD.EXE "+cFileScr)
    
     FERASE(cFileDxB)
     EJECUTAR(cCodPrg)
