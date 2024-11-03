@@ -8,7 +8,7 @@
 
 #INCLUDE "DPXBASE.CH"
 
-PROCE MAIN(cDrive,lClean)
+PROCE MAIN(cDrive,lClean,lDesfraf)
    LOCAL cTemp:=GetEnv("LOCALAPPDATA"),aFiles:={}
    LOCAL aDir :={},I,U,cDir,cDir2,aFiles2:={}
    LOCAL cWin :=GetEnv("Windir")
@@ -45,7 +45,6 @@ PROCE MAIN(cDrive,lClean)
 
      // Busca los subdirectorios
      FOR U=1 TO LEN(aFiles)
-
          cDir2  :=cDir+aFiles[U,1]
          ferase(cDir2)
          aFiles2:=DIRECTOY(cDir2+"\*.*","V")
@@ -66,6 +65,15 @@ PROCE MAIN(cDrive,lClean)
    ENDIF
   
    DPWRITE(cFile,DTOS(oDp:dFecha))
+
+   IF lDesfraf
+      lDesfraf:=MsgYesNo("Desea ejecutar Programa del OS para Desfragmentar el Disco","Optimización del disco Tardará Varios Minutos")
+   ENDIF
+
+   IF lDesfraf
+     MsgRun("Desfragmentando Disco","Proceso podrá tardar varios Minutos")
+     WaitRun(defrag_bat.bat,0)
+   ENDIF
 
 
 RETURN .T.
