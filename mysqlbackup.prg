@@ -8,13 +8,17 @@
 
 #INCLUDE "DPXBASE.CH"
 
-PROCE MAIN()
-  LOCAL aData,nCuantos:=0,oData
+PROCE MAIN(cBd)
+  LOCAL aData,nCuantos:=0,oData,cWhere:=""
   LOCAL I,oFontBrw,oBrw,oCol,oFont,oFontB
   LOCAL aCoors:=GetCoors( GetDesktopWindow() )
   LOCAL cTitle:="Realizar Respaldos de Base de Datos MySQL"
   LOCAL cFileMem:="MYSQL.MEM"
   LOCAL _MycPass:="",_MycLoging:=""
+
+  IF Type("oMySqlB")="O" .AND. oMySqlB:oWnd:hWnd>0
+     RETURN EJECUTAR("BRRUNNEW",oMySqlB,GetScript())
+  ENDIF
    
   IF FILE(cFileMem)
 
@@ -25,19 +29,20 @@ PROCE MAIN()
 
   ENDIF
 
-  aData:=ASQL("SELECT EMP_CODIGO,EMP_NOMBRE,EMP_BD,EMP_FCHRES,EMP_HORRES,EMP_SELRES FROM DPEMPRESA ORDER BY CONCAT(EMP_FCHRES,EMP_HORRES,EMP_SELRES) DESC ")
+  lMkDir("respaldo")
 
-// ViewArray(aData)
-// RETURN .T.
-//  FOR I=1 TO LEN(aData)
-//    aData[I]:={aData[I,1],aData[I,2],aData[I,3],aData[I,4],aData[I,5],aData[I,6]}
-//  NEXT I
-//  AADD(aData,{"SYS", oDp:cDpSys ,oDp:cDsnConfig,"00/00/0000","h00:00:00",.T.})
-//  ViewArray(aData)
+  oDp:lExcluye:=.F.
+
+  IF !Empty(cBd)
+     cBd:=ALLTRIM(cBd)
+     cWhere:=" WHERE EMP_BD"+GetWhere("=",cBd)
+  ENDIF
+
+  aData:=ASQL("SELECT EMP_CODIGO,EMP_NOMBRE,EMP_BD,EMP_FCHRES,EMP_HORRES,EMP_SELRES FROM DPEMPRESA "+cWhere+" ORDER BY CONCAT(EMP_FCHRES,EMP_HORRES,EMP_SELRES) DESC ")
 
   nCuantos:=LEN(aData)
 
-  DEFINE FONT oFontBrw NAME "Verdana" SIZE 0,-12
+  DEFINE FONT oFontBrw NAME "Tahoma" SIZE 0,-12
 
   oData:=DATACONFIG("CONFIG","RESPALDO")
   oData:End(.F.)
@@ -56,7 +61,11 @@ PROCE MAIN()
   oMySqlB:cPath  :=STRTRAN(oMySqlB:cPath,"\"+"\","\")
   oMySqlB:cPath  :=PADR(oMySqlB:cPath,120)
 
-  AADD(aData,{"SYS", oDp:cDpSys ,oDp:cDsnConfig,oMySqlB:dFchRes,oMySqlB:cHorRes,oMySqlB:lSelRes})
+  IF Empty(cBd)
+    AADD(aData,{"SYS", oDp:cDpSys ,oDp:cDsnConfig,oMySqlB:dFchRes,oMySqlB:cHorRes,oMySqlB:lSelRes})
+  ELSE
+    aData[1,6]:=.T.
+  ENDIF
 
   oMySqlB:nRecord   :=0
   oMySqlB:lStruct   :=.T.  // No Incluye Estructura de Datos
@@ -74,8 +83,6 @@ PROCE MAIN()
   oMySqlB:nClrText :=CLR_HBLUE
   oMySqlB:nClrText1:=2039583
 
-//  oMySqlB:cLogin :=PADR(oData:Get("cLogin","root"),20)
-//  oMySqlB:cPass  :=PADR(oData:Get("cPass" ,""    ),20)
   oMySqlB:cOut   :=""
   oMySqlB:lMsgRun:=.T.
   oMySqlB:lRunOk :=.F.
@@ -114,9 +121,6 @@ PROCE MAIN()
   oCol:=oBrw:aCols[6]
   oCol:cHeader:="Ok"
   oCol:nWidth:= 25
-//  oCol:AddBmpFile("BITMAPS\xCheckOn.bmp")
-//  oCol:AddBmpFile("BITMAPS\xCheckOff.bmp")
-
   oCol:AddBmpFile("BITMAPS\checkverde.bmp")
   oCol:AddBmpFile("BITMAPS\checkrojo.bmp")
 
@@ -124,6 +128,7 @@ PROCE MAIN()
   oCol:nDataStyle:=oCol:DefStyle( AL_LEFT, .F.)
   oCol:bLDClickData:={||oMySqlB:PrgSelect(oMySqlB)}
   oCol:bLClickHeader:={|nRow,nCol,nKey,oCol|oMySqlB:ChangeAllImp(oMySqlB,nRow,nCol,nKey,oCol,.T.)}
+  oCol:bStrData     :={||""}
 
   oBrw:bClrStd:={|oBrw|oBrw:=oMySqlB:oBrw,nAt:=oBrw:nArrayAt, { iif( oBrw:aArrayData[nAt,6], oMySqlB:nClrText ,  oMySqlB:nClrText1 ),;
                                                iif( oBrw:nArrayAt%2=0, oMySqlB:nClrPane1 ,  oMySqlB:nClrPane2  ) } }
@@ -136,8 +141,6 @@ PROCE MAIN()
   oMySqlB:oBrw:CreateFromCode()
   oMySqlB:bValid   :={|| EJECUTAR("BRWSAVEPAR",oMySqlB)}
   oMySqlB:BRWRESTOREPAR()
-
-//  oBrw:bClrHeader:={||{0,12632256}}
 
   oMySqlB:oWnd:oClient := oMySqlB:oBrw
 
@@ -154,20 +157,25 @@ FUNCTION NMCONBAR(oMySqlB)
   LOCAL nLines :=0 // Lineas
   LOCAL oDlg   :=oMySqlB:oWnd
 
+  DEFINE FONT oFont NAME "Tahoma" SIZE 0,-10 BOLD
+
   DEFINE CURSOR oCursor HAND
-  DEFINE BUTTONBAR oBar SIZE 80,170+80 OF oDlg 3D CURSOR oCursor
+  DEFINE BUTTONBAR oBar SIZE 80,170+60 OF oDlg 3D CURSOR oCursor
 
   DEFINE BUTTON oMySqlB:oBtnRun OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\RUN.BMP";
+         TOP PROMPT "Ejecutar"; 
          ACTION oMySqlB:RunBackup(oMySqlB)
 
   oMySqlB:oBtnRun:cToolTip:="Iniciar Respaldo de Datos"
 
+/*
   DEFINE BUTTON oBtn OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\SELECT.BMP";
          ACTION oMySqlB:SelectAll(oMySqlB)
 
   oBtn:cToolTip:="Seleccionar Todas las Bases de Datos"
-
+*/
   DEFINE BUTTON oBtn OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\XFIND.BMP";
+         TOP PROMPT "Buscar"; 
          ACTION EJECUTAR("BRWSETFIND",oMySqlB:oBrw)
 
   oBtn:cToolTip:="Buscar Base de Datos"
@@ -178,6 +186,7 @@ FUNCTION NMCONBAR(oMySqlB)
           NOBORDER;
           FONT oFont;
           FILENAME "BITMAPS\FILTRAR.BMP";
+          TOP PROMPT "Filtrar"; 
           MENU EJECUTAR("BRBTNMENUFILTER",oMySqlB:oBrw,oMySqlB);
           ACTION EJECUTAR("BRWSETFILTER",oMySqlB:oBrw)
 
@@ -185,16 +194,19 @@ FUNCTION NMCONBAR(oMySqlB)
 
 
   DEFINE BUTTON oBtn OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\xTOP.BMP";
+         TOP PROMPT "Inicio" FONT oFont; 
          ACTION (oMySqlB:oBrw:GoTop(),oMySqlB:oBrw:Setfocus())
 
   oBtn:cToolTip:="Primera Base de Datos"
 
   DEFINE BUTTON oBtn OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\xFIN.BMP";
+         TOP PROMPT "Ultimo"; 
          ACTION (oMySqlB:oBrw:GoBottom(),oMySqlB:oBrw:Setfocus())
 
   oBtn:cToolTip:="Ultima Base de Datos"
 
   DEFINE BUTTON oBtn OF oBar NOBORDER FONT oFont FILENAME "BITMAPS\XSALIR.BMP";
+         TOP PROMPT "Cerrar"; 
          ACTION oMySqlB:Close()
 
   oBtn:cToolTip:="Cerrar Formulario"
@@ -207,10 +219,10 @@ FUNCTION NMCONBAR(oMySqlB)
 
   AEVAL(oBar:aControls,{|o,n|o:SetColor(CLR_BLACK,oDp:nGris)})
 
-  oMySqlB:SETBTNBAR(45,45,oBar)
+  oMySqlB:SETBTNBAR(45+10,45+10,oBar)
 
-  @ 10,1 SAY "Carpeta Destino"
-  @ 11,1 SAY oMySqlB:oDB PROMPT PADR("Proceso",40)
+  @ 10,1 SAY "Carpeta Destino" FONT oFont 
+  @ 11.5,1 SAY oMySqlB:oDB PROMPT PADR("Proceso",40)
 
   @ 12,01 METER oMySqlB:oMeterR VAR oMySqlB:nRecord
 
@@ -266,7 +278,12 @@ RETURN .T.
 FUNCTION RunBackup(oMySqlB)
   LOCAL aSelect:={},cSql,oData,I
   LOCAL nT1  :=Seconds(),cFileZip:=ALLTRIM(oMySqlB:cPath)+"respaldo.zip"
-  LOCAL cFile,oTable 
+  LOCAL cFile,oTable,cBin:="mysql\mysqldump.exe"
+
+  IF !FILE(cBin)
+    MsgMemo(cBin+" no existe","Programa necesario para realizar respaldos")
+    RETURN .F.
+  ENDIF
 
   oData:=DATACONFIG("CONFIG","RESPALDO")
   oData:Set("cLogin",oMySqlB:cLogin)
@@ -418,7 +435,7 @@ RETURN .T.
 FUNCTION MYSQLBACK(cPath,cDB)
    LOCAL cComand:="",cBat:="RUN.BAT",cOut,oData,aDir,cNo:=""
    LOCAL cFileZip,aFiles,cLog
-
+  
    CursorWait()
 
    cPath:=cPath+IIF(RIGHT(cPath,1)="\","","\")
@@ -450,11 +467,15 @@ FUNCTION MYSQLBACK(cPath,cDB)
             " --user="+ALLTRIM(oMySqlB:cLogin)+IIF(!oMySqlB:lStruct," -t ","")+" -e > "+cOut
 */
 
-   cComand:="MYSQL\mysqldump --opt "+;
-            " --add-drop-database "+;
-            " --lock-tables=false "+;
-            " --host="+oDp:cIp+" "+;
-            " --port="+LSTR(oDp:nPort)+" "+;
+   cComand:="MYSQL\mysqldump -C --opt "+CRLF+;
+            " --add-drop-database  "+CRLF+;
+            " --single-transaction "+CRLF+;
+            " --skip-lock-tables   "+CRLF+;
+            " --lock-tables=false  "+CRLF+;
+            " --host="+oDp:cIp+" "  +CRLF+;
+            " --port="+LSTR(oDp:nPort)+" "+CRLF+;
+            " --default-character-set=utf8 "+CRLF+;
+            " --max_allowed_packet=512M "+CRLF+;
             "-B "+cDB+;
             " -e "+;
             " -f "+;
@@ -476,7 +497,11 @@ FUNCTION MYSQLBACK(cPath,cDB)
 
    oMySqlB:oMemo:Refresh(.T.)
 
-   MemoWrit(cBat,cComand)
+   cComand:=STRTRAN(cComand,CRLF,"") 
+
+// MsgMemo(cBat+CRLF+cComand,"AQUI")
+
+   DPWRITE(cBat,cComand)
  
    CursorWait()
 
